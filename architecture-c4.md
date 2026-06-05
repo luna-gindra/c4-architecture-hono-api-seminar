@@ -9,25 +9,60 @@ Dokumen ini memvisualisasikan arsitektur backend Sistem Manajemen Seminar KP & T
 
 ---
 
+## Kode Warna Universal
+
+| Warna | Representasi |
+|-------|-------------|
+| 🔵 Biru | Person / Aktor Pengguna |
+| 🟢 Hijau | System Internal (Sistem Utama) |
+| 🟠 Oranye | External System / Third-party |
+| 🟣 Ungu | Database / Data Store |
+| 🔴 Merah Muda | Middleware / Security |
+| 🟡 Kuning | Container / Infrastructure |
+| 🩵 Tosca | Background Process / Worker |
+
+---
+
 ## Level 1 — System Context
 
 ```mermaid
 C4Context
+    %%{init: {"theme": "base", "themeVariables": {
+        "c4Actor": "#1565C0",
+        "c4ActorBorder": "#0D47A1",
+        "c4ActorFontSize": 15,
+        "c4Container": "#2E7D32",
+        "c4ContainerBorder": "#1B5E20",
+        "c4System": "#2E7D32",
+        "c4SystemBorder": "#1B5E20",
+        "c4SystemBoundary": "#E8F5E9",
+        "c4Person": "#1565C0",
+        "c4PersonBorder": "#0D47A1",
+        "c4External": "#E65100",
+        "c4ExternalBorder": "#BF360C",
+        "c4ExternalDb": "#6A1B9A",
+        "c4Db": "#6A1B9A",
+        "c4DbBorder": "#4A148C",
+        "c4Rel": "#546E7A",
+        "c4Arrow": "#546E7A",
+        "c4Boundary": "#E8F5E9",
+        "c4BoundaryLabel": "#2E7D32"
+    }}}%%
     title System Context - API Seminar TIF
 
-    Person(mahasiswa, "Mahasiswa", "Mendaftar seminar, upload berkas, melihat jadwal dan hasil")
-    Person(dosen, "Dosen", "Melihat jadwal, mengatur constraint (termasuk via chat AI), menginput penilaian")
-    Person(koordinator, "Koordinator", "Mengelola pendaftaran, jadwal, ruangan, dosen, template dokumen, approval draft, dan dashboard monitoring")
+    Person(mahasiswa, "👨‍🎓 Mahasiswa", "Mendaftar seminar, upload berkas, melihat jadwal dan hasil")
+    Person(dosen, "👨‍🏫 Dosen", "Melihat jadwal, mengatur constraint (termasuk via chat AI), menginput penilaian")
+    Person(koordinator, "👩‍💼 Koordinator", "Mengelola pendaftaran, jadwal, ruangan, dosen, template dokumen, approval draft, dan dashboard monitoring")
 
-    System(api, "API Seminar TIF", "Backend REST API + Background Worker untuk manajemen seminar KP/TA Teknik Informatika")
+    System(api, "📋 API Seminar TIF", "Backend REST API + Background Worker untuk manajemen seminar KP/TA Teknik Informatika")
 
-    System_Ext(keycloak, "Keycloak", "Autentikasi & otorisasi (SSO JWT)")
-    System_Ext(postgres, "PostgreSQL", "Database relasional utama")
-    System_Ext(redis, "Redis", "Cache, rate limiting, dan job queue untuk background worker")
-    System_Ext(openrouter, "OpenRouter", "LLM provider untuk AI scheduling & constraint chat")
-    System_Ext(gcal, "Google Calendar API", "Pembuatan event & pengiriman undangan jadwal seminar ke dosen")
-    System_Ext(gdrive, "Google Drive API", "Penyimpanan dokumen pendaftaran mahasiswa")
-    System_Ext(smtp, "SMTP Gmail", "Pengiriman email/notifikasi pendaftaran dan jadwal")
+    System_Ext(keycloak, "🔐 Keycloak", "Autentikasi & otorisasi (SSO JWT)")
+    System_Ext(postgres, "🗄️ PostgreSQL", "Database relasional utama")
+    System_Ext(redis, "⚡ Redis", "Cache, rate limiting, dan job queue untuk background worker")
+    System_Ext(openrouter, "🤖 OpenRouter", "LLM provider untuk AI scheduling & constraint chat")
+    System_Ext(gcal, "📅 Google Calendar API", "Pembuatan event & pengiriman undangan jadwal seminar ke dosen")
+    System_Ext(gdrive, "📁 Google Drive API", "Penyimpanan dokumen pendaftaran mahasiswa")
+    System_Ext(smtp, "📧 SMTP Gmail", "Pengiriman email/notifikasi pendaftaran dan jadwal")
 
     Rel(mahasiswa, api, "Mengakses endpoint mahasiswa/pendaftaran/upload/jadwal", "HTTPS + JWT")
     Rel(dosen, api, "Mengakses endpoint dosen/jadwal/penilaian/constraint", "HTTPS + JWT")
@@ -40,23 +75,25 @@ C4Context
     Rel(api, gcal, "Buat/update event kalender & kirim undangan", "Google Calendar API v3")
     Rel(api, gdrive, "Upload/hapus file dokumen pendaftaran", "Google Drive API v3")
     Rel(api, smtp, "Kirim email pendaftaran/notifikasi", "Nodemailer SMTP")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
 ### Keterangan Level 1
 
-| Komponen | Deskripsi |
-|----------|-----------|
-| **Mahasiswa** | Pengguna utama yang mendaftar seminar, upload berkas, melihat jadwal |
-| **Dosen** | Pembimbing/penguji yang mengatur ketersediaan (constraint), menginput penilaian |
-| **Koordinator** | Staf prodi yang mengelola seluruh alur seminar dan monitoring dashboard |
-| **API Seminar TIF** | Sistem utama — mencakup HTTP API Server **dan** Background Worker |
-| **Keycloak** | Provider autentikasi enterprise (SSO), menghasilkan JWT token |
-| **PostgreSQL** | Database utama (schema `public`) |
-| **Redis** | Multi-purpose: cache query, rate limiting support, **dan** job queue untuk worker |
-| **OpenRouter** | Gateway LLM untuk AI schedule generation dan constraint parsing |
-| **Google Calendar API** | Membuat event kalender & mengirim undangan otomatis ke dosen terkait |
-| **Google Drive API** | File storage untuk dokumen pendaftaran mahasiswa |
-| **SMTP Gmail** | Email service untuk notifikasi pendaftaran |
+| Komponen | Warna | Deskripsi |
+|----------|-------|-----------|
+| **Mahasiswa** 🔵 | Biru | Pengguna utama yang mendaftar seminar, upload berkas, melihat jadwal |
+| **Dosen** 🔵 | Biru | Pembimbing/penguji yang mengatur ketersediaan (constraint), menginput penilaian |
+| **Koordinator** 🔵 | Biru | Staf prodi yang mengelola seluruh alur seminar dan monitoring dashboard |
+| **API Seminar TIF** 🟢 | Hijau | Sistem utama — mencakup HTTP API Server **dan** Background Worker |
+| **Keycloak** 🟠 | Oranye | Provider autentikasi enterprise (SSO), menghasilkan JWT token |
+| **PostgreSQL** 🟣 | Ungu | Database utama (schema `public`) |
+| **Redis** 🟣 | Ungu | Multi-purpose: cache query, rate limiting support, **dan** job queue untuk worker |
+| **OpenRouter** 🟠 | Oranye | Gateway LLM untuk AI schedule generation dan constraint parsing |
+| **Google Calendar API** 🟠 | Oranye | Membuat event kalender & mengirim undangan otomatis ke dosen terkait |
+| **Google Drive API** 🟠 | Oranye | File storage untuk dokumen pendaftaran mahasiswa |
+| **SMTP Gmail** 🟠 | Oranye | Email service untuk notifikasi pendaftaran |
 
 ---
 
@@ -64,28 +101,45 @@ C4Context
 
 ```mermaid
 C4Container
+    %%{init: {"theme": "base", "themeVariables": {
+        "c4Actor": "#1565C0",
+        "c4ActorBorder": "#0D47A1",
+        "c4Container": "#00897B",
+        "c4ContainerBorder": "#00695C",
+        "c4System": "#2E7D32",
+        "c4SystemBorder": "#1B5E20",
+        "c4SystemBoundary": "#E0F2F1",
+        "c4Db": "#6A1B9A",
+        "c4DbBorder": "#4A148C",
+        "c4External": "#E65100",
+        "c4ExternalBorder": "#BF360C",
+        "c4Rel": "#546E7A",
+        "c4Arrow": "#546E7A",
+        "c4Boundary": "#E0F2F1",
+        "c4BoundaryLabel": "#00695C"
+    }}}%%
     title Container Diagram - API Seminar TIF (Dual-Process Architecture)
 
-    Person(mahasiswa, "Mahasiswa")
-    Person(dosen, "Dosen")
-    Person(koordinator, "Koordinator")
+    Person(mahasiswa, "👨‍🎓 Mahasiswa")
+    Person(dosen, "👨‍🏫 Dosen")
+    Person(koordinator, "👩‍💼 Koordinator")
 
     System_Boundary(system, "API Seminar TIF") {
-        Container(apiServer, "HTTP API Server", "Bun + OpenAPIHono + TypeScript", "REST API, routing, middleware (auth/rate-limit/log), OpenAPI docs, error handling, SSE streams")
-        Container(worker, "Background Worker", "Bun + Hono Worker + TypeScript", "Proses job queue satu-per-satu: log creation, email sending, AI scheduling, Google Calendar invitations, constraint chat parsing")
-        Container(modules, "Feature Modules", "Handlers + Services + Repositories", "22 modul: jadwal, pendaftaran, penilaian, dosen, mahasiswa, ruangan, dokumen, constraint, dashboard, worker-job, dll.")
-        ContainerDb(prismaClient, "Prisma Client", "Prisma 7 ORM + adapter-pg", "Data access abstraction — digunakan oleh repositories")
-        Container(aiEngine, "AI Prompt Engine", "Markdown prompts + Zod schemas", "Persona, rules, task prompts, output schema validation untuk AI scheduling & constraint parsing")
+        Container(apiServer, "🌐 HTTP API Server", "Bun + OpenAPIHono + TypeScript", "REST API, routing, middleware (auth/rate-limit/log), OpenAPI docs, error handling, SSE streams")
+        Container(worker, "⚙️ Background Worker", "Bun + Hono Worker + TypeScript", "Proses job queue satu-per-satu: log creation, email sending, AI scheduling, Google Calendar invitations, constraint chat parsing")
+        Container(modules, "📦 Feature Modules", "Handlers + Services + Repositories", "22 modul: jadwal, pendaftaran, penilaian, dosen, mahasiswa, ruangan, dokumen, constraint, dashboard, worker-job, dll.")
+        ContainerDb(prismaClient, "🔷 Prisma Client", "Prisma 7 ORM + adapter-pg", "Data access abstraction — digunakan oleh repositories")
+        Container(aiEngine, "🧠 AI Prompt Engine", "Markdown prompts + Zod schemas", "Persona, rules, task prompts, output schema validation untuk AI scheduling & constraint parsing")
     }
 
-    ContainerDb(postgres, "PostgreSQL", "Relational DB", "Data dosen, mahasiswa, jadwal, penilaian, pendaftaran, dokumen, constraint, draft, audit log")
-    ContainerDb(redis, "Redis", "Key-value store", "3 fungsi: (1) Cache query/dashboard (2) Rate-limit support/fallback (3) Worker job queue (BRPOP)")
+    ContainerDb(postgres, "🗄️ PostgreSQL", "Relational DB", "Data dosen, mahasiswa, jadwal, penilaian, pendaftaran, dokumen, constraint, draft, audit log")
+    ContainerDb(redis, "⚡ Redis", "Key-value store", "3 fungsi: (1) Cache query/dashboard (2) Rate-limit support/fallback (3) Worker job queue (BRPOP)")
 
-    System_Ext(keycloak, "Keycloak", "SSO Auth Provider")
-    System_Ext(openrouter, "OpenRouter API", "LLM Gateway — model fallback untuk AI scheduling & constraint chat")
-    System_Ext(gcal, "Google Calendar API", "Event creation & undangan jadwal")
-    System_Ext(gdrive, "Google Drive API", "File storage dokumen pendaftaran")
-    System_Ext(smtp, "Gmail SMTP", "Email/notifikasi pendaftaran & jadwal")
+    System_Ext(keycloak, "🔐 Keycloak", "SSO Auth Provider")
+    System_Ext(openrouter, "🤖 OpenRouter API", "LLM Gateway — model fallback untuk AI scheduling & constraint chat")
+    System_Ext(gcal, "📅 Google Calendar API", "Event creation & undangan jadwal")
+    System_Ext(gdrive, "📁 Google Drive API", "File storage dokumen pendaftaran")
+    System_Ext(smtp, "📧 Gmail SMTP", "Email/notifikasi pendaftaran & jadwal")
 
     Rel(mahasiswa, apiServer, "HTTP requests", "HTTPS + JWT Bearer")
     Rel(dosen, apiServer, "HTTP requests", "HTTPS + JWT Bearer")
@@ -106,17 +160,38 @@ C4Container
     Rel(modules, gcal, "Create/update/delete calendar events", "Google Calendar API v3")
     Rel(modules, gdrive, "Upload/delete files", "Google Drive API v3")
     Rel(modules, smtp, "Send email", "Nodemailer SMTP")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
 ### Diagram Alur Job Queue (Penjelasan Tambahan Level 2)
 
 ```mermaid
 sequenceDiagram
-    participant Client
-    participant API as API Server
-    participant Redis as Redis
-    participant Worker as Background Worker
-    participant Ext as External Services
+    %%{init: {"theme": "base", "themeVariables": {
+        "actorBkg": "#1565C0",
+        "actorTextColor": "#fff",
+        "actorBorder": "#0D47A1",
+        "activationBkg": "#E3F2FD",
+        "activationBorder": "#1565C0",
+        "signalColor": "#37474F",
+        "signalTextColor": "#37474F",
+        "labelBoxBkg": "#FFF9C4",
+        "labelBoxBorder": "#F9A825",
+        "labelTextColor": "#F57F17",
+        "loopTextColor": "#2E7D32",
+        "noteBkgColor": "#FFF3E0",
+        "noteTextColor": "#E65100",
+        "noteBorderColor": "#E65100",
+        "actorBkg": "#1565C0",
+        "mainBkg": "#E8F5E9",
+        "altSectionBkg": "#E0F2F1"
+    }}}%%
+    participant Client as 👤 Client
+    participant API as 🌐 API Server
+    participant Redis as ⚡ Redis
+    participant Worker as ⚙️ Background Worker
+    participant Ext as 🌍 External Services
 
     Client->>API: HTTP Request (POST jadwal / POST constraint chat)
     API->>API: Validasi input & proses bisnis
@@ -139,14 +214,14 @@ sequenceDiagram
 
 ### Keterangan Level 2
 
-| Container | Deskripsi |
-|-----------|-----------|
-| **HTTP API Server** | Menerima semua HTTP requests, menjalankan middleware, routing ke handlers, mengembalikan response |
-| **Background Worker** | Proses **terpisah** yang berjalan independen dari API server. Mengambil job dari Redis queue (BRPOP), memprosesnya satu per satu, dan update status ke Redis + DB |
-| **Feature Modules** | 22 modul bisnis dengan struktur konsisten: Route → Handler → Service → Repository |
-| **Prisma Client** | ORM layer yang digunakan oleh repositories untuk query database |
-| **AI Prompt Engine** | Koleksi prompt templates (Markdown) dan Zod schemas untuk validasi output AI |
-| **Redis** | 3 fungsi utama: cache, rate limiting, **dan job queue** (list BRPOP/LPUSH) |
+| Container | Warna | Deskripsi |
+|-----------|-------|-----------|
+| **HTTP API Server** 🟦 | Biru Muda | Menerima semua HTTP requests, menjalankan middleware, routing ke handlers, mengembalikan response |
+| **Background Worker** 🩵 | Tosca | Proses **terpisah** yang berjalan independen dari API server. Mengambil job dari Redis queue (BRPOP), memprosesnya satu per satu |
+| **Feature Modules** 📦 | Kuning | 22 modul bisnis dengan struktur konsisten: Route → Handler → Service → Repository |
+| **Prisma Client** 🔷 | Biru Tua | ORM layer yang digunakan oleh repositories untuk query database |
+| **AI Prompt Engine** 🧠 | Hijau | Koleksi prompt templates (Markdown) dan Zod schemas untuk validasi output AI |
+| **Redis** ⚡ | Ungu | 3 fungsi utama: cache, rate limiting, **dan job queue** (list BRPOP/LPUSH) |
 
 ---
 
@@ -154,25 +229,42 @@ sequenceDiagram
 
 ```mermaid
 C4Component
+    %%{init: {"theme": "base", "themeVariables": {
+        "c4Actor": "#1565C0",
+        "c4ActorBorder": "#0D47A1",
+        "c4Container": "#1976D2",
+        "c4ContainerBorder": "#1565C0",
+        "c4Component": "#42A5F5",
+        "c4ComponentBorder": "#1976D2",
+        "c4SystemBoundary": "#E3F2FD",
+        "c4Db": "#6A1B9A",
+        "c4DbBorder": "#4A148C",
+        "c4External": "#E65100",
+        "c4ExternalBorder": "#BF360C",
+        "c4Rel": "#546E7A",
+        "c4Arrow": "#546E7A",
+        "c4Boundary": "#E3F2FD",
+        "c4BoundaryLabel": "#1565C0"
+    }}}%%
     title Component Diagram - HTTP API Server
 
     Container_Boundary(api, "HTTP API Server (Bun + OpenAPIHono)") {
-        Component(entry, "src/index.ts", "OpenAPIHono App", "Creates app, configures CORS, OpenAPI docs, global middleware, error handlers, mounts /api router")
-        Component(apiRouter, "src/api.ts", "API Router", "Aggregates semua feature routes under /api")
-        Component(authMw, "AuthMiddleware", "Middleware", "JWT bearer token extraction + role-based access (mahasiswa/dosen/koordinator)")
-        Component(rateMw, "RateLimitMiddleware", "Middleware", "Tiered rate limiting: global(300/min), read(120/min), write(30/min), auth(10/15min), AI(10/10min)")
-        Component(logMw, "LogMiddleware", "Middleware", "Structured request logging (method, path, status, duration)")
-        Component(handlers, "Handlers", "Controller layer", "Maps HTTP request/response ke service calls; extract context & params")
-        Component(services, "Services", "Business logic layer", "Validasi, rules, orchestration, cache interaction, external API calls")
-        Component(repositories, "Repositories", "Data access layer", "Prisma queries — findAll, findById, create, update, destroy")
-        Component(validators, "Validators (Zod)", "Zod schemas", "Validates params, query, body, form data sebelum handler")
-        Component(utils, "Utils / Helpers", "Shared utilities", "APIError, logger, cache keys/invalidation, tahun ajaran, jadwal/dosen/mahasiswa helpers, crypto")
-        Component(sseStream, "SSE Streaming", "Hono streamSSE", "Server-Sent Events untuk real-time job status & progress updates")
+        Component(entry, "📝 src/index.ts", "OpenAPIHono App", "Creates app, configures CORS, OpenAPI docs, global middleware, error handlers, mounts /api router")
+        Component(apiRouter, "🔀 src/api.ts", "API Router", "Aggregates semua feature routes under /api")
+        Component(authMw, "🔑 AuthMiddleware", "Middleware", "JWT bearer token extraction + role-based access (mahasiswa/dosen/koordinator)")
+        Component(rateMw, "⏱️ RateLimitMiddleware", "Middleware", "Tiered rate limiting: global(300/min), read(120/min), write(30/min), auth(10/15min), AI(10/10min)")
+        Component(logMw, "📋 LogMiddleware", "Middleware", "Structured request logging (method, path, status, duration)")
+        Component(handlers, "🎯 Handlers", "Controller layer", "Maps HTTP request/response ke service calls; extract context & params")
+        Component(services, "💼 Services", "Business logic layer", "Validasi, rules, orchestration, cache interaction, external API calls")
+        Component(repositories, "🔍 Repositories", "Data access layer", "Prisma queries — findAll, findById, create, update, destroy")
+        Component(validators, "✅ Validators (Zod)", "Zod schemas", "Validates params, query, body, form data sebelum handler")
+        Component(utils, "🔧 Utils / Helpers", "Shared utilities", "APIError, logger, cache keys/invalidation, tahun ajaran, jadwal/dosen/mahasiswa helpers, crypto")
+        Component(sseStream, "📡 SSE Streaming", "Hono streamSSE", "Server-Sent Events untuk real-time job status & progress updates")
     }
 
-    ContainerDb(postgres, "PostgreSQL", "Database")
-    ContainerDb(redis, "Redis", "Cache + Job Queue")
-    System_Ext(keycloak, "Keycloak", "SSO Auth")
+    ContainerDb(postgres, "🗄️ PostgreSQL", "Database")
+    ContainerDb(redis, "⚡ Redis", "Cache + Job Queue")
+    System_Ext(keycloak, "🔐 Keycloak", "SSO Auth")
 
     Rel(entry, apiRouter, "Mounts /api router")
     Rel(entry, authMw, "Route-level auth via authMiddleware()")
@@ -188,6 +280,8 @@ C4Component
     Rel(services, redis, "Cache: remember/get/set/invalidate\nQueue: WorkerJobService.enqueue()", "ioredis")
     Rel(authMw, keycloak, "Validasi JWT token signature", "OIDC")
     Rel(sseStream, redis, "Polls job status for SSE stream", "ioredis")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
 ---
@@ -196,29 +290,46 @@ C4Component
 
 ```mermaid
 C4Component
+    %%{init: {"theme": "base", "themeVariables": {
+        "c4Actor": "#1565C0",
+        "c4ActorBorder": "#0D47A1",
+        "c4Container": "#00897B",
+        "c4ContainerBorder": "#00695C",
+        "c4Component": "#4DB6AC",
+        "c4ComponentBorder": "#00897B",
+        "c4SystemBoundary": "#E0F2F1",
+        "c4Db": "#6A1B9A",
+        "c4DbBorder": "#4A148C",
+        "c4External": "#E65100",
+        "c4ExternalBorder": "#BF360C",
+        "c4Rel": "#546E7A",
+        "c4Arrow": "#546E7A",
+        "c4Boundary": "#E0F2F1",
+        "c4BoundaryLabel": "#00695C"
+    }}}%%
     title Component Diagram - Background Worker
 
-    Container_Boundary(worker, "Background Worker (Bun)") {
-        Component(workerEntry, "src/worker.ts", "Worker Entry Point", "Initialize Prisma + Redis, poll queue (BRPOP), dispatch jobs ke processor")
-        Component(jobProcessor, "Job Processor", "Switch by WorkerJobType", "Route job ke service handler yang sesuai berdasarkan tipe job")
-        Component(workerJobService, "WorkerJobService", "Job Management", "Enqueue, dequeue, markRunning/Completed/Failed, appendProgress, get status")
-        Component(progressTracker, "Progress Tracker", "Event Emitter", "Emit real-time progress events yang disimpan ke Redis untuk SSE streaming")
+    Container_Boundary(worker, "⚙️ Background Worker (Bun)") {
+        Component(workerEntry, "🚀 src/worker.ts", "Worker Entry Point", "Initialize Prisma + Redis, poll queue (BRPOP), dispatch jobs ke processor")
+        Component(jobProcessor, "🔀 Job Processor", "Switch by WorkerJobType", "Route job ke service handler yang sesuai berdasarkan tipe job")
+        Component(workerJobService, "📊 WorkerJobService", "Job Management", "Enqueue, dequeue, markRunning/Completed/Failed, appendProgress, get status")
+        Component(progressTracker, "📈 Progress Tracker", "Event Emitter", "Emit real-time progress events yang disimpan ke Redis untuk SSE streaming")
     }
 
-    Container_Boundary(jobTypes, "Job Type Processors") {
-        Component(logJob, "log.create", "Log Processor", "Membuat audit log entries di database")
-        Component(emailPendaftaran, "pendaftaran.email.send", "Email Pendaftaran", "Kirim email notifikasi pendaftaran (created/updated/validated)")
-        Component(emailJadwal, "jadwal.email.send", "Email Jadwal", "Kirim email notifikasi jadwal + sync Google Calendar invitation")
-        Component(aiDraft, "jadwal-draft.generate", "AI Draft Scheduler", "Generate batch draft jadwal via OpenRouter AI + validasi constraint")
-        Component(constraintChat, "constraint-dosen.chat", "Constraint Chat", "Parse pesan natural language dosen → array constraint via OpenRouter AI")
-        Component(constraintChatUpdate, "constraint-dosen.chat-update", "Constraint Chat Update", "Parse pesan natural language → update existing constraint via OpenRouter AI")
+    Container_Boundary(jobTypes, "📋 Job Type Processors") {
+        Component(logJob, "📝 log.create", "Log Processor", "Membuat audit log entries di database")
+        Component(emailPendaftaran, "📧 pendaftaran.email.send", "Email Pendaftaran", "Kirim email notifikasi pendaftaran (created/updated/validated)")
+        Component(emailJadwal, "📅 jadwal.email.send", "Email Jadwal", "Kirim email notifikasi jadwal + sync Google Calendar invitation")
+        Component(aiDraft, "🤖 jadwal-draft.generate", "AI Draft Scheduler", "Generate batch draft jadwal via OpenRouter AI + validasi constraint")
+        Component(constraintChat, "💬 constraint-dosen.chat", "Constraint Chat", "Parse pesan natural language dosen → array constraint via OpenRouter AI")
+        Component(constraintChatUpdate, "🔄 constraint-dosen.chat-update", "Constraint Chat Update", "Parse pesan natural language → update existing constraint via OpenRouter AI")
     }
 
-    ContainerDb(postgres, "PostgreSQL", "Database")
-    ContainerDb(redis, "Redis", "Job Queue + Status Store")
-    System_Ext(openrouter, "OpenRouter", "LLM Gateway")
-    System_Ext(gcal, "Google Calendar API", "Calendar invitations")
-    System_Ext(smtp, "Gmail SMTP", "Email sending")
+    ContainerDb(postgres, "🗄️ PostgreSQL", "Database")
+    ContainerDb(redis, "⚡ Redis", "Job Queue + Status Store")
+    System_Ext(openrouter, "🤖 OpenRouter", "LLM Gateway")
+    System_Ext(gcal, "📅 Google Calendar API", "Calendar invitations")
+    System_Ext(smtp, "📧 Gmail SMTP", "Email sending")
 
     Rel(workerEntry, redis, "BRPOP job queue + update status", "ioredis")
     Rel(workerEntry, jobProcessor, "Dispatch job by type")
@@ -241,6 +352,8 @@ C4Component
     Rel(constraintChatUpdate, postgres, "Update constraint record")
 
     Rel(workerJobService, redis, "Read/write job status + progress events")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
 ---
@@ -249,37 +362,54 @@ C4Component
 
 ```mermaid
 C4Component
+    %%{init: {"theme": "base", "themeVariables": {
+        "c4Actor": "#1565C0",
+        "c4ActorBorder": "#0D47A1",
+        "c4Container": "#F57F17",
+        "c4ContainerBorder": "#E65100",
+        "c4Component": "#FFB74D",
+        "c4ComponentBorder": "#F57F17",
+        "c4SystemBoundary": "#FFF8E1",
+        "c4Db": "#6A1B9A",
+        "c4DbBorder": "#4A148C",
+        "c4External": "#E65100",
+        "c4ExternalBorder": "#BF360C",
+        "c4Rel": "#546E7A",
+        "c4Arrow": "#546E7A",
+        "c4Boundary": "#FFF8E1",
+        "c4BoundaryLabel": "#E65100"
+    }}}%%
     title Component Diagram - Feature Modules (Updated)
 
-    Person(mahasiswa, "Mahasiswa")
-    Person(dosen, "Dosen")
-    Person(koordinator, "Koordinator")
+    Person(mahasiswa, "👨‍🎓 Mahasiswa")
+    Person(dosen, "👨‍🏫 Dosen")
+    Person(koordinator, "👩‍💼 Koordinator")
 
-    Container_Boundary(features, "Feature Modules (22 modules)") {
+    Container_Boundary(features, "📦 Feature Modules (22 modules)") {
 
-        Component(jadwal, "Jadwal Module", "Route + V + H + S + R", "CRUD jadwal seminar + conflict detection + Google Calendar invitation enqueue")
-        Component(jadwalDraft, "Jadwal Draft AI Module", "Route + V + H + S + R", "Generate batch draft jadwal via AI, approve/reject workflow, validasi constraint otomatis")
-        Component(pendaftaran, "Pendaftaran Module", "Route + V + H + S + R", "Pengajuan & pengelolaan pendaftaran seminar, EAV data_pendaftaran, status tracking")
-        Component(penilaian, "Penilaian Module", "Route + V + H + S + R", "Input & manajemen penilaian seminar, detail komponen nilai per role")
-        Component(dosenMod, "Dosen Module", "Route + V + H + S + R", "CRUD data dosen (NIP, nama, email)")
-        Component(mahasiswaMod, "Mahasiswa Module", "Route + V + H + S + R", "CRUD data mahasiswa (NIM, nama, status aktif)")
-        Component(ruangan, "Ruangan Module", "Route + V + H + S + R + Helper", "Data ruangan + deteksi konflik jadwal per ruangan")
-        Component(constraint, "Constraint Dosen Module", "Route + V + H + S + R", "CRUD constraint dosen + AI chat (NL parsing via OpenRouter) + SSE streaming progress")
-        Component(koordinatorDashboard, "Koordinator Dashboard Module", "Route + H + S", "Statistik dashboard, semester stats, recent activity, lecturer workload monitoring")
-        Component(masterData, "Master Data Modules", "Jenis Seminar + Tahun Ajaran + Bobot Penilai + Bidang Keahlian + Komponen Penilaian", "Konfigurasi master: jenis seminar, tahun ajaran, bobot penilai, bidang keahlian, komponen penilaian")
-        Component(dokumenTemplate, "Dokumen Template Module", "Route + V + H + S + R", "Template dokumen pendaftaran (FILE_UPLOAD/TEXT/URL/BOOLEAN/DATE/SELECT)")
-        Component(requirementDokumen, "Requirement Dokumen Module", "Route + V + H + S + R", "Requirement dokumen per jenis seminar + tahun ajaran")
-        Component(upload, "Upload Module", "Route + H + S", "Upload/delete dokumen pendaftaran via Google Drive API")
-        Component(log, "Audit Log Module", "Route + H + S + R", "Polymorphic audit log (entity_type + entity_id) untuk semua perubahan data")
-        Component(workerJob, "Worker Job Module", "Route + H + S + SSE", "Monitor job status via polling + SSE streaming real-time progress")
+        Component(jadwal, "📅 Jadwal Module", "Route + V + H + S + R", "CRUD jadwal seminar + conflict detection + Google Calendar invitation enqueue")
+        Component(jadwalDraft, "🤖 Jadwal Draft AI Module", "Route + V + H + S + R", "Generate batch draft jadwal via AI, approve/reject workflow, validasi constraint otomatis")
+        Component(pendaftaran, "📋 Pendaftaran Module", "Route + V + H + S + R", "Pengajuan & pengelolaan pendaftaran seminar, EAV data_pendaftaran, status tracking")
+        Component(penilaian, "📊 Penilaian Module", "Route + V + H + S + R", "Input & manajemen penilaian seminar, detail komponen nilai per role")
+        Component(dosenMod, "👨‍🏫 Dosen Module", "Route + V + H + S + R", "CRUD data dosen (NIP, nama, email)")
+        Component(mahasiswaMod, "🎓 Mahasiswa Module", "Route + V + H + S + R", "CRUD data mahasiswa (NIM, nama, status aktif)")
+        Component(ruangan, "🏢 Ruangan Module", "Route + V + H + S + R + Helper", "Data ruangan + deteksi konflik jadwal per ruangan")
+        Component(constraint, "💬 Constraint Dosen Module", "Route + V + H + S + R", "CRUD constraint dosen + AI chat (NL parsing via OpenRouter) + SSE streaming progress")
+        Component(koordinatorDashboard, "📈 Koordinator Dashboard Module", "Route + H + S", "Statistik dashboard, semester stats, recent activity, lecturer workload monitoring")
+        Component(masterData, "⚙️ Master Data Modules", "Jenis Seminar + Tahun Ajaran + Bobot Penilai + Bidang Keahlian + Komponen Penilaian", "Konfigurasi master data sistem")
+        Component(dokumenTemplate, "📄 Dokumen Template Module", "Route + V + H + S + R", "Template dokumen pendaftaran (FILE_UPLOAD/TEXT/URL/BOOLEAN/DATE/SELECT)")
+        Component(requirementDokumen, "📎 Requirement Dokumen Module", "Route + V + H + S + R", "Requirement dokumen per jenis seminar + tahun ajaran")
+        Component(upload, "📤 Upload Module", "Route + H + S", "Upload/delete dokumen pendaftaran via Google Drive API")
+        Component(log, "📋 Audit Log Module", "Route + H + S + R", "Polymorphic audit log (entity_type + entity_id) untuk semua perubahan data")
+        Component(workerJob, "📡 Worker Job Module", "Route + H + S + SSE", "Monitor job status via polling + SSE streaming real-time progress")
     }
 
-    ContainerDb(postgres, "PostgreSQL", "Relational DB")
-    ContainerDb(redis, "Redis", "Cache + Job Queue")
-    System_Ext(openrouter, "OpenRouter", "LLM AI service")
-    System_Ext(gdrive, "Google Drive", "File storage")
-    System_Ext(gcal, "Google Calendar", "Calendar invitations")
-    System_Ext(smtp, "Gmail SMTP", "Email service")
+    ContainerDb(postgres, "🗄️ PostgreSQL", "Relational DB")
+    ContainerDb(redis, "⚡ Redis", "Cache + Job Queue")
+    System_Ext(openrouter, "🤖 OpenRouter", "LLM AI service")
+    System_Ext(gdrive, "📁 Google Drive", "File storage")
+    System_Ext(gcal, "📅 Google Calendar", "Calendar invitations")
+    System_Ext(smtp, "📧 Gmail SMTP", "Email service")
 
     Rel(mahasiswa, pendaftaran, "Mengajukan pendaftaran")
     Rel(mahasiswa, jadwal, "Melihat jadwal seminar")
@@ -313,6 +443,8 @@ C4Component
     Rel(koordinatorDashboard, redis, "Cache dashboard stats")
     Rel(log, postgres, "Persist audit log")
     Rel(workerJob, redis, "Poll job status + SSE stream progress events")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
 ---
@@ -321,22 +453,39 @@ C4Component
 
 ```mermaid
 C4Component
+    %%{init: {"theme": "base", "themeVariables": {
+        "c4Actor": "#1565C0",
+        "c4ActorBorder": "#0D47A1",
+        "c4Container": "#00897B",
+        "c4ContainerBorder": "#00695C",
+        "c4Component": "#4DB6AC",
+        "c4ComponentBorder": "#00897B",
+        "c4SystemBoundary": "#E0F2F1",
+        "c4Db": "#6A1B9A",
+        "c4DbBorder": "#4A148C",
+        "c4External": "#E65100",
+        "c4ExternalBorder": "#BF360C",
+        "c4Rel": "#546E7A",
+        "c4Arrow": "#546E7A",
+        "c4Boundary": "#E0F2F1",
+        "c4BoundaryLabel": "#00695C"
+    }}}%%
     title Component Diagram - Google Calendar Integration Flow
 
-    Container_Boundary(jadwalSystem, "Jadwal Module") {
-        Component(jadwalService, "JadwalService", "Business Logic", "CRUD jadwal + enqueue Google Calendar invitation saat create/update")
-        Component(workerJobSvc, "WorkerJobService", "Job Queue", "Enqueue job tipe JADWAL_EMAIL_SEND ke Redis")
+    Container_Boundary(jadwalSystem, "📅 Jadwal Module") {
+        Component(jadwalService, "💼 JadwalService", "Business Logic", "CRUD jadwal + enqueue Google Calendar invitation saat create/update")
+        Component(workerJobSvc, "📊 WorkerJobService", "Job Queue", "Enqueue job tipe JADWAL_EMAIL_SEND ke Redis")
     }
 
-    Container_Boundary(workerSystem, "Background Worker") {
-        Component(emailJadwalJob, "JADWAL_EMAIL_SEND Processor", "Job Handler", "Ambil data jadwal, kirim email, sync Google Calendar event")
-        Component(gcalInfra, "GoogleCalendarService", "Infrastructure", "Create/update/delete Google Calendar events, kirim undangan ke dosen via email")
+    Container_Boundary(workerSystem, "⚙️ Background Worker") {
+        Component(emailJadwalJob, "📧 JADWAL_EMAIL_SEND Processor", "Job Handler", "Ambil data jadwal, kirim email, sync Google Calendar event")
+        Component(gcalInfra, "📅 GoogleCalendarService", "Infrastructure", "Create/update/delete Google Calendar events, kirim undangan ke dosen via email")
     }
 
-    System_Ext(gcal, "Google Calendar API", "Event & invitation management")
-    System_Ext(smtp, "Gmail SMTP", "Email notification")
-    ContainerDb(postgres, "PostgreSQL", "Database")
-    ContainerDb(redis, "Redis", "Job Queue")
+    System_Ext(gcal, "📅 Google Calendar API", "Event & invitation management")
+    System_Ext(smtp, "📧 Gmail SMTP", "Email notification")
+    ContainerDb(postgres, "🗄️ PostgreSQL", "Database")
+    ContainerDb(redis, "⚡ Redis", "Job Queue")
 
     Rel(jadwalService, workerJobSvc, "enqueueGoogleCalendarInvitation(jadwalId, action)")
     Rel(workerJobSvc, redis, "LPUSH job ke queue", "ioredis")
@@ -345,6 +494,8 @@ C4Component
     Rel(gcalInfra, gcal, "events.insert() / events.update() / events.delete()", "Google Calendar API v3")
     Rel(gcalInfra, smtp, "Kirim email undangan ke dosen")
     Rel(emailJadwalJob, postgres, "Read jadwal + penilaian data")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
 ---
@@ -355,6 +506,16 @@ C4Component
 - **Level 1 (System Context):** Aktor → Sistem Utama → External Systems — untuk non-teknis stakeholder
 - **Level 2 (Container):** API Server + Background Worker (dual-process) + shared infrastructure — untuk technical architect
 - **Level 3 (Component):** Detail internal komponen per container — untuk developer
+
+### Kode Warna Diagram
+| Warna | Digunakan Untuk |
+|-------|----------------|
+| 🔵 Biru | Person (Mahasiswa, Dosen, Koordinator) — aktor manusia |
+| 🟢 Hijau / Tosca | System Internal & Container — komponen sistem sendiri |
+| 🟠 Oranye | External System — layanan pihak ketiga (Keycloak, Google, OpenRouter, SMTP) |
+| 🟣 Ungu | Database — PostgreSQL, Redis, Prisma Client |
+| 🔴 Merah Muda | Middleware — Auth, Rate Limit, Log |
+| 🟡 Kuning | Boundary labels & Feature Modules |
 
 ### Perubahan dari Versi Sebelumnya
 1. **Background Worker** ditambahkan sebagai container terpisah (dual-process architecture)
