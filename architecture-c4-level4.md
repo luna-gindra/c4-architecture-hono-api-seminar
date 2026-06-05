@@ -26,12 +26,7 @@
 Sistem ini menggunakan **Layered Architecture** dengan pola **Route → Handler → Service → Repository → Database** (Prisma ORM). Semua layer berkomunikasi satu arah (unidirectional) dari atas ke bawah.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "primaryColor": "#E3F2FD",
-    "primaryTextColor": "#0D47A1",
-    "lineColor": "#546E7A",
-    "fontSize": 14
-}}}%%
+%%{init: {"theme": "default"}}%%
 graph TB
     subgraph PRESENTATION ["🎯 Presentation Layer"]
         R["📝 Route<br/>Hono Routes + Zod Validation"]
@@ -105,12 +100,7 @@ graph TB
 ## 4.2 Core Package — Dependency Injection Container
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "primaryColor": "#E8F5E9",
-    "primaryTextColor": "#1B5E20",
-    "lineColor": "#546E7A",
-    "fontSize": 13
-}}}%%
+%%{init: {"theme": "default"}}%%
 classDiagram
     class Container {
         -services: Map~string, ServiceDefinition~
@@ -169,12 +159,7 @@ classDiagram
 ## 4.3 HTTP API Server — Request Lifecycle (Class Diagram)
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "primaryColor": "#E3F2FD",
-    "primaryTextColor": "#0D47A1",
-    "lineColor": "#546E7A",
-    "fontSize": 13
-}}}%%
+%%{init: {"theme": "default"}}%%
 classDiagram
     class OpenAPIHono {
         +router: RegExpRouter
@@ -246,12 +231,7 @@ classDiagram
 > Setiap modul (jadwal, dosen, mahasiswa, penilaian, dll) mengikuti pola yang sama.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "primaryColor": "#FFF8E1",
-    "primaryTextColor": "#F57F17",
-    "lineColor": "#546E7A",
-    "fontSize": 13
-}}}%%
+%%{init: {"theme": "default"}}%%
 classDiagram
     class BaseRoute {
         <<abstract>>
@@ -366,12 +346,7 @@ classDiagram
 ## 4.5 Infrastructure Layer — Singleton Services
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "primaryColor": "#E0F2F1",
-    "primaryTextColor": "#00695C",
-    "lineColor": "#546E7A",
-    "fontSize": 13
-}}}%%
+%%{init: {"theme": "default"}}%%
 classDiagram
     class DatabaseService {
         <<Prisma Infrastructure>>
@@ -461,24 +436,7 @@ classDiagram
 ## 4.6 Worker Job Processing — Queue Architecture (Code)
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "actorBkg": "#1565C0",
-    "actorTextColor": "#fff",
-    "actorBorder": "#0D47A1",
-    "activationBkg": "#E3F2FD",
-    "activationBorder": "#1565C0",
-    "signalColor": "#37474F",
-    "signalTextColor": "#37474F",
-    "labelBoxBkg": "#FFF9C4",
-    "labelBoxBorder": "#F9A825",
-    "labelTextColor": "#F57F17",
-    "loopTextColor": "#2E7D32",
-    "noteBkgColor": "#FFF3E0",
-    "noteTextColor": "#E65100",
-    "noteBorderColor": "#E65100",
-    "mainBkg": "#E8F5E9",
-    "altSectionBkg": "#E0F2F1"
-}}}%%
+%%{init: {"theme": "default"}}%%
 sequenceDiagram
     participant Client as 👤 Client
     participant HTTP as 🌐 HTTP API Server<br/>(index.ts)
@@ -524,12 +482,7 @@ sequenceDiagram
 ## 4.7 Worker Job Types — Dispatch Table
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "primaryColor": "#E0F2F1",
-    "primaryTextColor": "#00695C",
-    "lineColor": "#546E7A",
-    "fontSize": 13
-}}}%%
+%%{init: {"theme": "default"}}%%
 classDiagram
     class WorkerJobType {
         <<enum>>
@@ -597,12 +550,7 @@ classDiagram
 ## 4.8 Domain Models — Prisma ER Diagram (Code)
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "primaryColor": "#E8EAF6",
-    "primaryTextColor": "#1A237E",
-    "lineColor": "#546E7A",
-    "fontSize": 13
-}}}%%
+%%{init: {"theme": "default"}}%%
 erDiagram
     dosen {
         varchar(18) nip PK
@@ -799,12 +747,7 @@ erDiagram
 ## 4.9 AI Constraint Chat — Code Flow (Class Diagram)
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "primaryColor": "#FFF3E0",
-    "primaryTextColor": "#E65100",
-    "lineColor": "#546E7A",
-    "fontSize": 13
-}}}%%
+%%{init: {"theme": "default"}}%%
 classDiagram
     class ConstraintDosenHandler {
         <<static>>
@@ -890,12 +833,7 @@ classDiagram
 ## 4.10 Jadwal Draft Generation — AI Scheduling Code Flow
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "primaryColor": "#E8F5E9",
-    "primaryTextColor": "#1B5E20",
-    "lineColor": "#546E7A",
-    "fontSize": 13
-}}}%%
+%%{init: {"theme": "default"}}%%
 classDiagram
     class JadwalDraftHandler {
         <<static>>
@@ -1083,12 +1021,7 @@ src/
 ## 4.12 Middleware Chain — Class Diagram
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "primaryColor": "#FFEBEE",
-    "primaryTextColor": "#C62828",
-    "lineColor": "#546E7A",
-    "fontSize": 13
-}}}%%
+%%{init: {"theme": "default"}}%%
 classDiagram
     class HonoMiddleware {
         <<interface>>
@@ -1154,24 +1087,7 @@ classDiagram
 ## 4.13 Cache Strategy — Code Pattern
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {
-    "actorBkg": "#2E7D32",
-    "actorTextColor": "#fff",
-    "actorBorder": "#1B5E20",
-    "activationBkg": "#E8F5E9",
-    "activationBorder": "#2E7D32",
-    "signalColor": "#37474F",
-    "signalTextColor": "#37474F",
-    "labelBoxBkg": "#FFF9C4",
-    "labelBoxBorder": "#F9A825",
-    "labelTextColor": "#F57F17",
-    "loopTextColor": "#2E7D32",
-    "noteBkgColor": "#FFF3E0",
-    "noteTextColor": "#E65100",
-    "noteBorderColor": "#E65100",
-    "mainBkg": "#E8F5E9",
-    "altSectionBkg": "#E0F2F1"
-}}}%%
+%%{init: {"theme": "default"}}%%
 sequenceDiagram
     participant Handler as 🎯 Handler
     participant Service as 💼 Service
