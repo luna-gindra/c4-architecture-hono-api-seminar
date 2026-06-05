@@ -552,6 +552,56 @@ classDiagram
 ```mermaid
 %%{init: {"theme": "default"}}%%
 erDiagram
+
+    enum status {
+        DRAFT
+        APPROVED
+        REJECTED
+    }
+    enum status_berkas {
+        PENDING
+        REVISI
+        APPROVED
+        REJECTED
+        UPLOAD_ULANG
+    }
+    enum status_jadwal {
+        BELUM_JADWAL
+        SUDAH_JADWAL
+    }
+    enum tipe_input {
+        FILE_UPLOAD
+        TEXT
+        URL
+        BOOLEAN
+        DATE
+        SELECT
+        MULTI_SELECT
+    }
+    enum type {
+        AVAILABLE_TIME
+        UNAVAILABLE_TIME
+        PREFERENCE
+        LOCATION
+    }
+    enum action {
+        CREATE
+        UPDATE
+        DELETE
+        GANTI_JADWAL
+        GANTI_DOSEN
+    }
+    enum actor_type {
+        KOORDINATOR
+        DOSEN
+        MAHASISWA
+    }
+    enum entity_type {
+        JADWAL
+        PENILAIAN
+        PENDAFTARAN
+    }
+
     dosen {
         varchar(18) nip PK
         varchar(255) nama
@@ -606,14 +656,12 @@ erDiagram
         json list_dosen
         json llm_reasoning
         float confidence
-        enum status DRAFT|APPROVED|REJECTED
     }
 
     penilaian {
         cuid id PK
         varchar(14) id_jadwal FK
         varchar(18) nip FK
-        enum role PenilaiRole
     }
 
     detail_penilaian {
@@ -629,7 +677,6 @@ erDiagram
         varchar(50) nama
         int persentase
         boolean is_aktif
-        enum role PenilaiRole
     }
 
     pendaftaran {
@@ -638,8 +685,6 @@ erDiagram
         varchar(5) kode_tahun_ajaran
         varchar(50) id_pengajuan_fst UK
         varchar(20) id_jenis_seminar FK
-        enum status_berkas PENDING|REVISI|APPROVED|REJECTED|UPLOAD_ULANG
-        enum status_jadwal BELUM_JADWAL|SUDAH_JADWAL
         varchar(18) nip_pembimbing_1
         varchar(18) nip_pembimbing_2
         varchar(18) nip_penguji_1
@@ -662,7 +707,6 @@ erDiagram
         varchar(150) nama
         varchar(50) kode UK
         text deskripsi
-        enum tipe_input FILE_UPLOAD|TEXT|URL|BOOLEAN|DATE|SELECT|MULTI_SELECT
         json opsi
         varchar(50) format_file
         int max_size_mb
@@ -692,7 +736,6 @@ erDiagram
     constraint_dosen {
         cuid id PK
         varchar(18) nip FK
-        enum type AVAILABLE_TIME|UNAVAILABLE_TIME|PREFERENCE|LOCATION
         int hari
         timestamptz waktu_mulai
         timestamptz waktu_selesai
@@ -705,10 +748,7 @@ erDiagram
     log {
         cuid id PK
         timestamptz timestamp
-        enum action CREATE|UPDATE|DELETE|GANTI_JADWAL|GANTI_DOSEN
-        enum actor_type KOORDINATOR|DOSEN|MAHASISWA
         varchar actor_id
-        enum entity_type JADWAL|PENILAIAN|PENDAFTARAN|...
         varchar entity_id
         json context
         json old_values
@@ -718,7 +758,6 @@ erDiagram
     bobot_penilai {
         cuid id PK
         varchar(20) id_jenis_seminar FK
-        enum role PenilaiRole
         int persentase
     }
 
